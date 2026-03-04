@@ -1,0 +1,20 @@
+{
+    "name": "types-class",
+    "version": "1.0.0",
+    "description": "Base class for runtime type checking in JavaScript",
+    "author": "Blaine Motsinger",
+    "main": "src/types_class.js",
+    "scripts": {
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "lint": "node node_modules/eslint/bin/eslint.js . --fix",
+        "lint:check": "node node_modules/eslint/bin/eslint.js ."
+
+    },
+    "devDependencies": {
+        "eslint": "^9.0.0",
+        "@stylistic/eslint-plugin": "^3.0.0",
+        "jest": "^29.7.0"
+    }
+}
