@@ -125,7 +125,7 @@ jobs:
                       
                       # Add version link
                       echo "" >> "$TEMP_FILE"
-                      echo "[$NEW_VERSION]: https://github.com/renderorange/types-class/releases/tag/v$NEW_VERSION" >> "$TEMP_FILE"
+                      echo "[$NEW_VERSION]: https://github.com/renderorange/class-types/releases/tag/v$NEW_VERSION" >> "$TEMP_FILE"
                       
                       mv "$TEMP_FILE" CHANGELOG.md
                   else
@@ -147,7 +147,7 @@ jobs:
                   - Compound types: isaAnyOf, isaAllOf, isaNoneOf
                   - Utilities: validate(), maybe()
 
-                  [1.0.0]: https://github.com/renderorange/types-class/releases/tag/v1.0.0
+                  [1.0.0]: https://github.com/renderorange/class-types/releases/tag/v1.0.0
                   EOF
                       sed -i "s/## \[1.0.0\]/## [$NEW_VERSION] - $DATE\n\n### Added\n- Release version $NEW_VERSION\n\n## [1.0.0]/" CHANGELOG.md
                       sed -i "s|/v1.0.0|/v$NEW_VERSION|" CHANGELOG.md

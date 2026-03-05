@@ -1,21 +1,21 @@
-# @renderorange/types-class
+# @renderorange/class-types
 
 Runtime type checking base class for JavaScript.
 
 ## Installation
 
 ```bash
-npm install @renderorange/types-class
+npm install @renderorange/class-types
 ```
 
 ## Usage
 
-Extend `TypesClass` and define methods that use the built-in type checks:
+Extend `ClassTypes` and define methods that use the built-in type checks:
 
 ```javascript
-const TypesClass = require("@renderorange/types-class");
+const ClassTypes = require("@renderorange/class-types");
 
-class User extends TypesClass {
+class User extends ClassTypes {
     constructor(name, email, age) {
         super();
         this.name = this.validate("name", name, "isaString");
@@ -32,7 +32,7 @@ const user = new User("John", "john@example.com", 25);
 The `maybe` method allows values to be null or undefined, but validates the type if a value is provided:
 
 ```javascript
-class User extends TypesClass {
+class User extends ClassTypes {
     constructor(name, email, age) {
         super();
         this.name = this.validate("name", name, "isaString");
@@ -52,7 +52,7 @@ new User("John", "john@example.com", 25, 123);  // throws TypeError
 Combinators let you combine multiple type checks:
 
 ```javascript
-class User extends TypesClass {
+class User extends ClassTypes {
     constructor(name, email, age, phone) {
         super();
         this.name = this.validate("name", name, "isaString");
@@ -86,7 +86,7 @@ class User extends TypesClass {
 You can also use combinators through `validate()` by passing the type methods array as an extra argument:
 
 ```javascript
-class User extends TypesClass {
+class User extends ClassTypes {
     constructor(name, identifier) {
         super();
         this.name = this.validate("name", name, "isaString");

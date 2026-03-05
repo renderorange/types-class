@@ -1,6 +1,6 @@
-const TypesClass = require("../src/types_class.js");
+const ClassTypes = require("../src/class_types.js");
 
-class TestChild extends TypesClass {
+class TestChild extends ClassTypes {
     testPositiveInt (value) {
         return this.isaPositiveInt(value);
     }
@@ -50,7 +50,7 @@ class TestChild extends TypesClass {
     }
 }
 
-describe("TypesClass", () => {
+describe("ClassTypes", () => {
     let instance;
 
     beforeEach(() => {
@@ -432,7 +432,7 @@ describe("TypesClass", () => {
         });
 
         test("can be used directly in constructor", () => {
-            class TestUser extends TypesClass {
+            class TestUser extends ClassTypes {
                 constructor (identifier) {
                     super();
                     this.identifier = this.isaAnyOf(["isaString", "isaNumber"], identifier);
@@ -470,7 +470,7 @@ describe("TypesClass", () => {
         });
 
         test("can be used with isaString for length validation pattern", () => {
-            class TestUser extends TypesClass {
+            class TestUser extends ClassTypes {
                 validatePhone (phone) {
                     return this.isaAllOf(["isaString"], phone);
                 }
@@ -573,7 +573,7 @@ describe("TypesClass", () => {
         });
 
         test("can use combinators in constructor via validate", () => {
-            class TestUser extends TypesClass {
+            class TestUser extends ClassTypes {
                 constructor (name, identifier) {
                     super();
                     this.name = this.validate("name", name, "isaString");
@@ -597,7 +597,7 @@ describe("TypesClass", () => {
         });
 
         test("can be used in class constructor patterns", () => {
-            class TestUser extends TypesClass {
+            class TestUser extends ClassTypes {
                 constructor (name, age) {
                     super();
                     this.name = this.validate("name", name, "isaString");
@@ -660,7 +660,7 @@ describe("TypesClass", () => {
         });
 
         test("can be used in class constructor for optional fields", () => {
-            class TestUser extends TypesClass {
+            class TestUser extends ClassTypes {
                 constructor (name, nickname) {
                     super();
                     this.name = this.validate("name", name, "isaString");

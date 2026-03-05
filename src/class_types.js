@@ -1,7 +1,7 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const URL_REGEX = /^https?:\/\/.+/;
 
-class TypesClass {
+class ClassTypes {
     #check (methodName, predicate, value) {
         if (!predicate(value)) {
             const actualType = value === null ? "null" : typeof value;
@@ -193,4 +193,4 @@ class TypesClass {
     }
 }
 
-module.exports = TypesClass;
+module.exports = ClassTypes;

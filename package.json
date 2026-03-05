@@ -1,10 +1,10 @@
 {
-    "name": "@renderorange/types-class",
+    "name": "@renderorange/class-types",
     "version": "1.0.0",
     "description": "Base class for runtime type checking in JavaScript",
     "author": "Blaine Motsinger <blaine@renderorange.com>",
     "license": "MIT",
-    "main": "src/types_class.js",
+    "main": "src/class_types.js",
     "files": [
         "src/",
         "LICENSE",
@@ -22,12 +22,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/renderorange/types-class.git"
+        "url": "git+https://github.com/renderorange/class-types.git"
     },
     "bugs": {
-        "url": "https://github.com/renderorange/types-class/issues"
+        "url": "https://github.com/renderorange/class-types/issues"
     },
-    "homepage": "https://github.com/renderorange/types-class#readme",
+    "homepage": "https://github.com/renderorange/class-types#readme",
     "publishConfig": {
         "access": "public"
     },
