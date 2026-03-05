@@ -1,11 +1,11 @@
-# types-class
+# @renderorange/types-class
 
 Runtime type checking base class for JavaScript.
 
 ## Installation
 
 ```bash
-npm install types-class
+npm install @renderorange/types-class
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install types-class
 Extend `TypesClass` and define methods that use the built-in type checks:
 
 ```javascript
-const TypesClass = require("types-class");
+const TypesClass = require("@renderorange/types-class");
 
 class User extends TypesClass {
     constructor(name, email, age) {

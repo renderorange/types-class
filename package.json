@@ -1,16 +1,42 @@
 {
-    "name": "types-class",
+    "name": "@renderorange/types-class",
     "version": "1.0.0",
     "description": "Base class for runtime type checking in JavaScript",
-    "author": "Blaine Motsinger",
+    "author": "Blaine Motsinger <blaine@renderorange.com>",
+    "license": "MIT",
     "main": "src/types_class.js",
+    "files": [
+        "src/",
+        "LICENSE",
+        "README.md",
+        "CHANGELOG.md"
+    ],
+    "keywords": [
+        "type-checking",
+        "validation",
+        "javascript",
+        "class",
+        "runtime-types",
+        "type-validation",
+        "type-checker"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/renderorange/types-class.git"
+    },
+    "bugs": {
+        "url": "https://github.com/renderorange/types-class/issues"
+    },
+    "homepage": "https://github.com/renderorange/types-class#readme",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
         "lint": "node node_modules/eslint/bin/eslint.js . --fix",
         "lint:check": "node node_modules/eslint/bin/eslint.js ."
-
     },
     "devDependencies": {
         "eslint": "^9.0.0",

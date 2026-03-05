@@ -1,0 +1,188 @@
+name: Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            version_type:
+                description: "Version bump type"
+                required: true
+                default: "patch"
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                    - custom
+            custom_version:
+                description: "Custom version (only used if type is 'custom')"
+                required: false
+                type: string
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write
+            id-token: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  registry-url: "https://registry.npmjs.org"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run tests
+              run: npm test
+
+            - name: Run lint check
+              run: npm run lint:check
+
+            - name: Determine version
+              id: version
+              run: |
+                  CURRENT_VERSION=$(node -p "require('./package.json').version")
+                  
+                  if [ "${{ github.event.inputs.version_type }}" == "custom" ]; then
+                      NEW_VERSION="${{ github.event.inputs.custom_version }}"
+                  else
+                      NEW_VERSION=$(node -p "
+                          const v = '${CURRENT_VERSION}'.split('.');
+                          const type = '${{ github.event.inputs.version_type }}';
+                          if (type === 'major') {
+                              v[0] = parseInt(v[0]) + 1;
+                              v[1] = 0;
+                              v[2] = 0;
+                          } else if (type === 'minor') {
+                              v[1] = parseInt(v[1]) + 1;
+                              v[2] = 0;
+                          } else {
+                              v[2] = parseInt(v[2]) + 1;
+                          }
+                          v.join('.');
+                      ")
+                  fi
+                  
+                  echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+                  echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+                  echo "Current version: $CURRENT_VERSION"
+                  echo "New version: $NEW_VERSION"
+
+            - name: Validate version
+              run: |
+                  if [ -z "${{ steps.version.outputs.new_version }}" ]; then
+                      echo "Error: New version is empty"
+                      exit 1
+                  fi
+                  
+                  if [ "${{ steps.version.outputs.current_version }}" == "${{ steps.version.outputs.new_version }}" ]; then
+                      echo "Error: New version is the same as current version"
+                      exit 1
+                  fi
+
+            - name: Update package.json version
+              run: |
+                  node -e "
+                      const fs = require('fs');
+                      const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+                      pkg.version = '${{ steps.version.outputs.new_version }}';
+                      fs.writeFileSync('package.json', JSON.stringify(pkg, null, 4) + '\n');
+                      console.log('Updated package.json to version', pkg.version);
+                  "
+
+            - name: Generate changelog
+              run: |
+                  NEW_VERSION="${{ steps.version.outputs.new_version }}"
+                  DATE=$(date +%Y-%m-%d)
+                  
+                  if [ -f CHANGELOG.md ]; then
+                      # Update existing changelog
+                      TEMP_FILE=$(mktemp)
+                      
+                      # Extract header (first 6 lines)
+                      head -n 6 CHANGELOG.md > "$TEMP_FILE"
+                      
+                      # Add new version entry
+                      echo "" >> "$TEMP_FILE"
+                      echo "## [$NEW_VERSION] - $DATE" >> "$TEMP_FILE"
+                      echo "" >> "$TEMP_FILE"
+                      echo "### Added" >> "$TEMP_FILE"
+                      echo "- Release version $NEW_VERSION" >> "$TEMP_FILE"
+                      echo "" >> "$TEMP_FILE"
+                      
+                      # Append rest of changelog (skip header)
+                      tail -n +7 CHANGELOG.md >> "$TEMP_FILE"
+                      
+                      # Add version link
+                      echo "" >> "$TEMP_FILE"
+                      echo "[$NEW_VERSION]: https://github.com/renderorange/types-class/releases/tag/v$NEW_VERSION" >> "$TEMP_FILE"
+                      
+                      mv "$TEMP_FILE" CHANGELOG.md
+                  else
+                      # Create new changelog
+                      cat > CHANGELOG.md << 'EOF'
+                  # Changelog
+
+                  All notable changes to this project will be documented in this file.
+
+                  The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+                  and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+                  ## [1.0.0] - 2025-03-04
+
+                  ### Added
+                  - Initial release with runtime type checking base class
+                  - Basic types: isaPositiveInt, isaEmailAddress, isaString
+                  - Standard types: isaNumber, isaBoolean, isaDate, isaURL, isaArray, isaObject
+                  - Compound types: isaAnyOf, isaAllOf, isaNoneOf
+                  - Utilities: validate(), maybe()
+
+                  [1.0.0]: https://github.com/renderorange/types-class/releases/tag/v1.0.0
+                  EOF
+                      sed -i "s/## \[1.0.0\]/## [$NEW_VERSION] - $DATE\n\n### Added\n- Release version $NEW_VERSION\n\n## [1.0.0]/" CHANGELOG.md
+                      sed -i "s|/v1.0.0|/v$NEW_VERSION|" CHANGELOG.md
+                  fi
+                  
+                  echo "Changelog updated"
+
+            - name: Configure git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Commit changes
+              run: |
+                  git add package.json CHANGELOG.md
+                  git commit -m "chore(release): v${{ steps.version.outputs.new_version }}"
+
+            - name: Push to main
+              run: git push origin main
+
+            - name: Create and push tag
+              run: |
+                  git tag -a "v${{ steps.version.outputs.new_version }}" -m "Release v${{ steps.version.outputs.new_version }}"
+                  git push origin "v${{ steps.version.outputs.new_version }}"
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: "v${{ steps.version.outputs.new_version }}"
+                  name: "v${{ steps.version.outputs.new_version }}"
+                  generate_release_notes: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish to npm
+              run: npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
